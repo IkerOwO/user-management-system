@@ -1,7 +1,7 @@
 package test.java.main.java;
 
-import main.java.usuarios.GestorUsuarios;
-import main.java.usuarios.User;
+import test.java.main.usuarios.GestorUsuarios;
+import test.java.main.usuarios.User;
 
 public class Main {
     public static void main(String[] args){
@@ -28,5 +28,10 @@ public class Main {
 
         // VER USUARIOS
         gestor.seeUsuarios();
+
+        /*
+        CON BASE DE DATOS
+         */
+//
     }
 }

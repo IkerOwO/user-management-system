@@ -1,4 +1,4 @@
-package test.java.usuarios;
+package test.java.main.usuarios;
 
 public class User {
 

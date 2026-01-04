@@ -63,11 +63,11 @@ public class GestorUsuarios {
         }
         return banned;
     }
-
+    /*
     public void seeUsuarios(){
         for(User usuario : this.usuarios){
             System.out.println(usuario);
         }
     }
-
+     */
 }
