@@ -4,14 +4,17 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import java.util.Objects;
 
+import main.java.resources.SQLConnection.SQLConnection;
 import main.java.usuarios.GestorUsuarios;
 import main.java.usuarios.User;
 
 public class Dashboard extends JFrame{
     // DECLARACIÓN DE CADA ELEMENTO
     public JTable tablaUsuarios;
+    public JComboBox baneado;
     public DefaultTableModel modeloTabla;
     public JButton addUsuario, deleteUsuario, banUsuario;
     public JTextField idField, userField;
@@ -76,10 +79,13 @@ public class Dashboard extends JFrame{
     private void createUser(ActionEvent e){
         idField = new JTextField();
         userField = new JTextField();
+        String[] opcBaneo = {"true","false"}; // PARA LAS 2 POSIBLES OPCIONES DE ELECCION EN EL JComboBox
+        baneado = new JComboBox(opcBaneo);
         try{
             Object[] message = {
                     "ID:", idField,
-                    "Usuario:", userField
+                    "Usuario:", userField,
+                    "Baneado?:", baneado
             };
 
             int option = JOptionPane.showConfirmDialog(
@@ -96,6 +102,10 @@ public class Dashboard extends JFrame{
                 User usuarios = new User(idUsuario, nombreUsuario);
                 // MANDAR EL ID Y NOMBRE DE USUARIO A LA TABLA
                 modeloTabla.addRow(new Object[]{ idUsuario, nombreUsuario });
+                // AGREGAR USUARIO A LA BBDD
+                String insertUser = String.format("INSERT INTO users(id, nombreUsuario, banned) VALUES (%s, %s, %b) ", idUsuario, nombreUsuario, Arrays.toString(opcBaneo));
+                Connection(insertUser);
+
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -134,5 +144,10 @@ public class Dashboard extends JFrame{
 
 
 
+    }
+
+    // PARA LA CONEXION CON LA BBDD
+    public void Connection(String query){
+        SQLConnection.Connection(query);
     }
 }
