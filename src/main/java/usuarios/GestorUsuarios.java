@@ -3,6 +3,7 @@ package main.java.usuarios;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import main.java.resources.SQLConnection.SQLConnection;
 
 public class GestorUsuarios {
     private List<User> usuarios;
@@ -63,6 +64,7 @@ public class GestorUsuarios {
         }
         return banned;
     }
+
     /*
     public void seeUsuarios(){
         for(User usuario : this.usuarios){
