@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Vector;
 
 import main.java.resources.SQLConnection.SQLConnection;
 import main.java.usuarios.GestorUsuarios;
@@ -14,7 +15,6 @@ import main.java.usuarios.User;
 public class Dashboard extends JFrame{
     // DECLARACIÓN DE CADA ELEMENTO
     public JTable tablaUsuarios;
-    public JComboBox baneado;
     public DefaultTableModel modeloTabla;
     public JButton addUsuario, deleteUsuario, banUsuario;
     public JTextField idField, userField;
@@ -31,6 +31,7 @@ public class Dashboard extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUI();
         setVisible(true);
+        gestor = new GestorUsuarios();
     }
 
     private void setUI(){
@@ -52,7 +53,7 @@ public class Dashboard extends JFrame{
         deleteUsuario.setVisible(true);
         deleteUsuario.addActionListener(this::deleteUser);
 
-        banUsuario = new JButton("Borrar usuario");
+        banUsuario = new JButton("Banear usuario");
         banUsuario.setBounds(700,700,120,30);
         banUsuario.setVisible(true);
         banUsuario.addActionListener(this::banUser);
@@ -65,7 +66,7 @@ public class Dashboard extends JFrame{
     }
 
     private void createTable(){
-        String[] columns = { "User ID", "Username" };
+        String[] columns = { "User ID", "Username", "Banned" };
 
         modeloTabla = new DefaultTableModel(columns, 0);
         tablaUsuarios = new JTable(modeloTabla);
@@ -79,8 +80,10 @@ public class Dashboard extends JFrame{
     private void createUser(ActionEvent e){
         idField = new JTextField();
         userField = new JTextField();
-        String[] opcBaneo = {"true","false"}; // PARA LAS 2 POSIBLES OPCIONES DE ELECCION EN EL JComboBox
-        baneado = new JComboBox(opcBaneo);
+        Vector<Boolean> comboBoxItems = new Vector<>();
+        comboBoxItems.add(Boolean.TRUE);
+        comboBoxItems.add(Boolean.FALSE);
+        JComboBox<Boolean> baneado = new JComboBox<>(comboBoxItems);
         try{
             Object[] message = {
                     "ID:", idField,
@@ -98,14 +101,16 @@ public class Dashboard extends JFrame{
             if (option == JOptionPane.OK_OPTION) {
                 int idUsuario = Integer.parseInt(idField.getText());
                 String nombreUsuario = userField.getText();
-                // CREAR USUARIO CON LA CLASE USER
+                Boolean estaBaneado = (Boolean) baneado.getSelectedItem();
+                // CREAR USUARIO CON LA CLASE USER (SOLO ID Y NOMBRE DE USUARIO)
                 User usuarios = new User(idUsuario, nombreUsuario);
-                // MANDAR EL ID Y NOMBRE DE USUARIO A LA TABLA
-                modeloTabla.addRow(new Object[]{ idUsuario, nombreUsuario });
+                // GUARDAR USUARIO EN ARRAYLIST CON EL GESTOR
+                gestor.createUser(usuarios);
+                // MANDAR A LA TABLA
+                modeloTabla.addRow(new Object[]{ idUsuario, nombreUsuario, estaBaneado });
                 // AGREGAR USUARIO A LA BBDD
-                String insertUser = String.format("INSERT INTO users(id, nombreUsuario, banned) VALUES (%s, %s, %b) ", idUsuario, nombreUsuario, Arrays.toString(opcBaneo));
+                String insertUser = String.format("INSERT INTO users(id, nombreUsuario, banned) VALUES (%s, %s, %b) ", idUsuario, nombreUsuario, estaBaneado);
                 Connection(insertUser);
-
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -116,7 +121,7 @@ public class Dashboard extends JFrame{
         idField = new JTextField();
         try{
             Object[] message = {
-                    "ID:", idField,
+                    "ID:", idField
             };
 
             int option = JOptionPane.showConfirmDialog(
@@ -131,23 +136,53 @@ public class Dashboard extends JFrame{
                 // BORRAR USUARIO CON EL GESTOR
                 gestor.borrarUsuario(idUsuario);
                 // BORRAR EL USUARIO DE LA TABLA
-                modeloTabla.removeRow(idUsuario);
+                for(int i = 0; i < modeloTabla.getRowCount(); i++){
+                    int idTabla = (int) modeloTabla.getValueAt(i, 0);
+                    if(idTabla == idUsuario){
+                        modeloTabla.removeRow(i);
+                        break;
+                    }
+                }
+                // BORRAR EL USUARIO DE LA BBDD
+                String deleteUser = String.format("DELETE FROM users WHERE id = %d", idUsuario);
+                Connection(deleteUser);
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-
-
     }
 
     private void banUser(ActionEvent e){
+        idField = new JTextField();
+        try{
+            Object[] message = {
+                    "ID:", idField
+            };
 
+            int option = JOptionPane.showConfirmDialog(
+                    this,
+                    message,
+                    "Introduce el ID del usuario a banear",
+                    JOptionPane.OK_CANCEL_OPTION
+            );
 
-
+            if (option == JOptionPane.OK_OPTION) {
+                int idUsuario = Integer.parseInt(idField.getText());
+                // BANEAR USUARIO CON EL GESTOR
+                gestor.banUsuario(idUsuario);
+                // MODIFICAR USUARIO EN TABLA
+                //modeloTabla.setValueAt();
+                // MODIFICAR USUARIO EN BBDD
+                String banUser = String.format("UPDATE users SET banned = true WHERE id = %d", idUsuario);
+                Connection(banUser);
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     // PARA LA CONEXION CON LA BBDD
-    public void Connection(String query){
+    private void Connection(String query){
         SQLConnection.Connection(query);
     }
 }
