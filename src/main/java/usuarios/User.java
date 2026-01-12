@@ -1,5 +1,7 @@
 package main.java.usuarios;
 
+import java.util.Objects;
+
 public class User {
     /*
         TODO -> Agregar mas elementos para los usuarios

@@ -3,7 +3,6 @@ package main.java.usuarios;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import main.java.resources.SQLConnection.SQLConnection;
 
 public class GestorUsuarios {
     private List<User> usuarios;
@@ -11,6 +10,10 @@ public class GestorUsuarios {
     public GestorUsuarios(){
         // METER LISTA ORDENADA EN UN ARRAYLIST
         this.usuarios = new ArrayList<User>();
+    }
+
+    public int genID(){
+        return (int)(Math.random() * 1000000);
     }
 
     public User createUser(User usuario){
