@@ -8,18 +8,24 @@ public class User {
      */
     private int id;
     private String nombreUsuario;
+    private String grupo;
     private boolean banned;
     private int diasBan;
 
-    public User(int id, String nombreUsuario){
+    public User(int id, String nombreUsuario, String grupo){
         this.id = id;
         this.nombreUsuario = nombreUsuario;
+        this.grupo = grupo;
         this.banned = false;
         this.diasBan = 0;
     }
 
     public void setNombre(String nombreUsuario){
         this.nombreUsuario = nombreUsuario;
+    }
+
+    public void setGrupo(String grupo){
+        this.grupo = grupo;
     }
 
     public boolean isBaneado() {
@@ -45,6 +51,10 @@ public class User {
         return this.nombreUsuario;
     }
 
+    public String getGrupo(){
+        return this.grupo;
+    }
+
     public int getId(){
         return this.id;
     }
@@ -54,6 +64,7 @@ public class User {
         return "User{id=" + id +
                 ", nombre='" + nombreUsuario + '\'' +
                 ", baneado=" + banned +
+                ", Grupo=" + grupo +
                 ", diasBan=" + diasBan + "}";
     }
 }
