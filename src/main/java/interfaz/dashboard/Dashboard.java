@@ -17,7 +17,7 @@ public class Dashboard extends JFrame{
     public JTable tablaUsuarios;
     public DefaultTableModel modeloTabla;
     public JButton addUsuario, deleteUsuario, banUsuario;
-    public JTextField idField, userField;
+    public JTextField idField, userField, groupField;
     public GestorUsuarios gestor;
 
     public Dashboard(){
@@ -66,7 +66,7 @@ public class Dashboard extends JFrame{
     }
 
     private void createTable(){
-        String[] columns = { "User ID", "Username", "Banned" };
+        String[] columns = { "User ID", "Username", "Group", "Banned" };
 
         modeloTabla = new DefaultTableModel(columns, 0);
         tablaUsuarios = new JTable(modeloTabla);
@@ -80,6 +80,7 @@ public class Dashboard extends JFrame{
     private void createUser(ActionEvent e){
         idField = new JTextField();
         userField = new JTextField();
+        groupField = new JTextField();
         Vector<Boolean> comboBoxItems = new Vector<>();
         comboBoxItems.add(Boolean.TRUE);
         comboBoxItems.add(Boolean.FALSE);
@@ -88,6 +89,7 @@ public class Dashboard extends JFrame{
             Object[] message = {
                     "ID:", idField,
                     "Usuario:", userField,
+                    "Grupo:", groupField,
                     "Baneado?:", baneado
             };
 
@@ -101,13 +103,14 @@ public class Dashboard extends JFrame{
             if (option == JOptionPane.OK_OPTION) {
                 int idUsuario = Integer.parseInt(idField.getText());
                 String nombreUsuario = userField.getText();
+                String grupo = groupField.getText();
                 Boolean estaBaneado = (Boolean) baneado.getSelectedItem();
                 // CREAR USUARIO CON LA CLASE USER (SOLO ID Y NOMBRE DE USUARIO)
-                User usuarios = new User(idUsuario, nombreUsuario);
+                User usuarios = new User(idUsuario, nombreUsuario, grupo);
                 // GUARDAR USUARIO EN ARRAYLIST CON EL GESTOR
                 gestor.createUser(usuarios);
                 // MANDAR A LA TABLA
-                modeloTabla.addRow(new Object[]{ idUsuario, nombreUsuario, estaBaneado });
+                modeloTabla.addRow(new Object[]{ idUsuario, nombreUsuario, grupo, estaBaneado });
                 // AGREGAR USUARIO A LA BBDD
                 String insertUser = String.format("INSERT INTO users(id, nombreUsuario, banned) VALUES (%s, %s, %b) ", idUsuario, nombreUsuario, estaBaneado);
                 Connection(insertUser);
@@ -171,7 +174,14 @@ public class Dashboard extends JFrame{
                 // BANEAR USUARIO CON EL GESTOR
                 gestor.banUsuario(idUsuario);
                 // MODIFICAR USUARIO EN TABLA
-                //modeloTabla.setValueAt();
+                // TODO NO FUNCIONA ESTO
+                for(int i = 0; i < modeloTabla.getRowCount(); i++){
+                    int idTabla = Integer.parseInt(modeloTabla.getValueAt(i,0).toString());
+                    if(idTabla == idUsuario){
+                        modeloTabla.setValueAt(Boolean.TRUE,i,4);
+                        break;
+                    }
+                }
                 // MODIFICAR USUARIO EN BBDD
                 String banUser = String.format("UPDATE users SET banned = true WHERE id = %d", idUsuario);
                 Connection(banUser);
