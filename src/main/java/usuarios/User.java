@@ -13,7 +13,7 @@ public class User {
     private int diasBan;
 
     public User(int id, String nombreUsuario, String grupo){
-        this.id = id;
+        //this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.grupo = grupo;
         this.banned = false;
