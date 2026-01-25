@@ -11,6 +11,8 @@ import main.java.resources.SQLConnection.SQLConnection;
 import main.java.usuarios.GestorUsuarios;
 import main.java.usuarios.User;
 
+import static main.java.resources.SQLConnection.SQLConnection.insertUser;
+
 public class Dashboard extends JFrame{
     // DECLARACIÓN DE CADA ELEMENTO
     public JTable tablaUsuarios;
@@ -111,8 +113,7 @@ public class Dashboard extends JFrame{
                 // MANDAR A LA TABLA
                 modeloTabla.addRow(new Object[]{ idUsuario, nombreUsuario, grupo, estaBaneado });
                 // AGREGAR USUARIO A LA BBDD
-                String insertUser = String.format("INSERT INTO users(id, nombreUsuario, banned) VALUES (%s, %s, %b) ", idUsuario, nombreUsuario, estaBaneado);
-                Connection(insertUser);
+                insertUser(idUsuario, nombreUsuario, grupo, estaBaneado);
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -146,8 +147,7 @@ public class Dashboard extends JFrame{
                     }
                 }
                 // BORRAR EL USUARIO DE LA BBDD
-                String deleteUser = String.format("DELETE FROM users WHERE nombreUsuario = %s", username);
-                Connection(deleteUser);
+                SQLConnection.deleteUser(username);
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -181,16 +181,10 @@ public class Dashboard extends JFrame{
                     }
                 }
                 // MODIFICAR USUARIO EN BBDD
-                String banUser = String.format("UPDATE users SET banned = true WHERE nombreUsuario = %s", username);
-                Connection(banUser);
+                SQLConnection.banUser(username);
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    // PARA LA CONEXION CON LA BBDD
-    private void Connection(String query){
-        SQLConnection.Connection(query);
     }
 }
