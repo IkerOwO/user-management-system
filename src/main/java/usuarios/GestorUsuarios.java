@@ -21,12 +21,12 @@ public class GestorUsuarios {
         return usuario;
     }
 
-    public boolean borrarUsuario(int usuarioId){
+    public boolean borrarUsuario(String user){
         Iterator<User> iterator = this.usuarios.iterator();
         boolean deleted = false;
-        while (iterator.hasNext()) {
+        while(iterator.hasNext()){
             User usuario = iterator.next();
-            if (usuario.getId() == usuarioId) {
+            if(usuario.getNombre().equals(user)){
                 iterator.remove();
                 deleted = true;
             }
@@ -50,29 +50,20 @@ public class GestorUsuarios {
         return (int)(Math.random() * 1000000) + 1;
     }
 
-    public boolean banUsuario(int usuarioId){
+    public boolean banUsuario(String user){
         boolean banned = false;
-        for (User usuario : this.usuarios) {
-            if (usuario.getId() == usuarioId) {
-                // SI EL USUARIO YA ESTA BANEADO
+        for(User usuario : this.usuarios){
+            if(usuario.getNombre().equals(user)){
                 if(usuario.isBaneado()){
                     System.out.println("El usuario ya esta baneado");
                     return false;
                 }
                 int dias = banDays();
                 usuario.banear(dias);
-                System.out.println("Usuario " + usuarioId + " baneado por " + dias + " días :3");
+                System.out.println("Usuario " + user + " baneado por " + dias + " días :3");
                 banned = true;
             }
         }
         return banned;
     }
-
-    /*
-    public void seeUsuarios(){
-        for(User usuario : this.usuarios){
-            System.out.println(usuario);
-        }
-    }
-     */
 }

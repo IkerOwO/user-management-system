@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -121,33 +120,33 @@ public class Dashboard extends JFrame{
     }
 
     private void deleteUser(ActionEvent e){
-        idField = new JTextField();
+        userField = new JTextField();
         try{
             Object[] message = {
-                    "ID:", idField
+                    "Username:", userField
             };
 
             int option = JOptionPane.showConfirmDialog(
                     this,
                     message,
-                    "Introduce el ID del usuario a borrar",
+                    "Introduce el username del usuario a borrar",
                     JOptionPane.OK_CANCEL_OPTION
             );
 
             if (option == JOptionPane.OK_OPTION) {
-                int idUsuario = Integer.parseInt(idField.getText());
+                String username = userField.getText();
                 // BORRAR USUARIO CON EL GESTOR
-                gestor.borrarUsuario(idUsuario);
+                gestor.borrarUsuario(username);
                 // BORRAR EL USUARIO DE LA TABLA
                 for(int i = 0; i < modeloTabla.getRowCount(); i++){
-                    int idTabla = (int) modeloTabla.getValueAt(i, 0);
-                    if(idTabla == idUsuario){
+                    String userTabla = modeloTabla.getValueAt(i, 1).toString();
+                    if(userTabla.equalsIgnoreCase(username.trim())){
                         modeloTabla.removeRow(i);
                         break;
                     }
                 }
                 // BORRAR EL USUARIO DE LA BBDD
-                String deleteUser = String.format("DELETE FROM users WHERE id = %d", idUsuario);
+                String deleteUser = String.format("DELETE FROM users WHERE nombreUsuario = %s", username);
                 Connection(deleteUser);
             }
         } catch (Exception ex) {
@@ -156,34 +155,33 @@ public class Dashboard extends JFrame{
     }
 
     private void banUser(ActionEvent e){
-        idField = new JTextField();
+        userField = new JTextField();
         try{
             Object[] message = {
-                    "ID:", idField
+                    "Username:", userField
             };
 
             int option = JOptionPane.showConfirmDialog(
                     this,
                     message,
-                    "Introduce el ID del usuario a banear",
+                    "Introduce el username del usuario a banear",
                     JOptionPane.OK_CANCEL_OPTION
             );
 
             if (option == JOptionPane.OK_OPTION) {
-                int idUsuario = Integer.parseInt(idField.getText());
+                String username = userField.getText();
                 // BANEAR USUARIO CON EL GESTOR
-                gestor.banUsuario(idUsuario);
+                gestor.banUsuario(username);
                 // MODIFICAR USUARIO EN TABLA
-                // TODO NO FUNCIONA ESTO
-                for(int i = 0; i < modeloTabla.getRowCount(); i++){
-                    int idTabla = Integer.parseInt(modeloTabla.getValueAt(i,0).toString());
-                    if(idTabla == idUsuario){
-                        modeloTabla.setValueAt(Boolean.TRUE,i,4);
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    String usernameTabla = modeloTabla.getValueAt(i, 1).toString();
+                    if (usernameTabla.equalsIgnoreCase(username.trim())) {
+                        modeloTabla.setValueAt(Boolean.TRUE, i, 3);
                         break;
                     }
                 }
                 // MODIFICAR USUARIO EN BBDD
-                String banUser = String.format("UPDATE users SET banned = true WHERE id = %d", idUsuario);
+                String banUser = String.format("UPDATE users SET banned = true WHERE nombreUsuario = %s", username);
                 Connection(banUser);
             }
         } catch (Exception ex) {
