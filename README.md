@@ -4,6 +4,4 @@
 
 - Create, delete and ban users
 
-# TODO Things
-
-- Use a MySQL Database to save and delete the users
+- All of this is done via a SQLite DB that is created the moment you execute the program
